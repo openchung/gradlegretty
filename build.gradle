@@ -1,0 +1,74 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'war'
+apply plugin: 'org.akhikhl.gretty'
+
+group 'com.test'
+version '1.0'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    jcenter()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'org.akhikhl.gretty:gretty:2.0.0'
+    }
+}
+
+if (!project.plugins.findPlugin(org.akhikhl.gretty.GrettyPlugin))
+    project.apply(plugin: org.akhikhl.gretty.GrettyPlugin)
+
+dependencies {
+    compile (
+            'org.springframework:spring-context:4.2.6.RELEASE',
+            'joda-time:joda-time:2.9.4'
+    )
+    providedCompile (
+            'javax.servlet:javax.servlet-api:3.1.0'
+    )
+    testCompile (
+            'junit:junit:4.12'
+    )
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+[compileJava, javadoc, compileTestJava]*.options*.encoding = 'UTF-8'
+
+gretty {
+    httpEnabled = true
+    servletContainer = "tomcat8"
+    host = "localhost"
+    httpPort = 8081
+    contextPath = '/mygretty'
+    scanInterval = 1
+    fastReload = true
+    inplaceMode = "soft"
+    loggingLevel = "DEBUG"
+    consoleLogEnabled = true
+
+    debugPort = 6005
+    debugSuspend = true
+}
